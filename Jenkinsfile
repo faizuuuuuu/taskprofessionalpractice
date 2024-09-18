@@ -36,8 +36,12 @@ pipeline {
         stage('Code Quality Analysis') {
             steps {
                 script {
-                    withSonarQubeEnv('SonarQube') { // 'SonarQube' is the name you set in Jenkins
-                        sh 'sonar-scanner -Dsonar.projectKey=my-react-app -Dsonar.sources=./src -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN'
+                    withSonarQubeEnv('SonarQube') { // 'SonarQube' is the name of your SonarQube server in Jenkins
+                        // Use credentialsId to get the token from Jenkins credentials store
+                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                            def scannerHome = tool 'SonarQubeScanner' // Ensure 'SonarQubeScanner' matches your global tool name
+                            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=my-react-app -Dsonar.sources=./src -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN"
+                        }
                     }
                 }
             }
