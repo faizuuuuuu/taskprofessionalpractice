@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Build the Docker image
+                    // Build the Docker image for the React app
                     sh 'docker build -t react-app .'
                 }
             }
@@ -14,9 +14,15 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // (Optional) Run tests inside the Docker container if you have any tests in your React app
-                    // You can remove this if you don't have any tests yet
-                    sh 'docker run react-app npm test'
+                    // Start the React app in Docker container
+                    sh 'docker run --rm -d -p 3002:80 react-app'
+                    
+                    // Install dependencies and run the Selenium test
+                    sh '''
+                    npm install
+                    npm install selenium-webdriver
+                    node tests/testApp.js
+                    '''
                 }
             }
         }
@@ -26,11 +32,8 @@ pipeline {
                 script {
                     // Stop any currently running container
                     sh 'docker stop $(docker ps -q --filter ancestor=react-app) || true'
-
-                    // Remove the stopped container
-                    sh 'docker rm $(docker ps -a -q --filter ancestor=react-app) || true'
-
-                    // Run the newly built Docker container on the desired port (e.g., 3000)
+                    
+                    // Deploy the newly built Docker container
                     sh 'docker run -d -p 3002:80 react-app'
                 }
             }
