@@ -2,29 +2,29 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
-            steps {
-                script {
-                    // Build Docker image
-                    sh 'docker build -t react-app .'
+        // stage('Build') {
+        //     steps {
+        //         script {
+        //             // Build Docker image
+        //             sh 'docker build -t react-app .'
 
-                    // Create the production build for React
-                    sh 'npm run build'
+        //             // Create the production build for React
+        //             sh 'npm run build'
 
-                    // Verify current directory
-                    sh 'pwd'
+        //             // Verify current directory
+        //             sh 'pwd'
 
-                    // List files in the current directory for verification
-                    sh 'ls'
+        //             // List files in the current directory for verification
+        //             sh 'ls'
 
-                    // Zip the build folder
-                    sh 'zip -r artifact.zip build'
+        //             // Zip the build folder
+        //             sh 'zip -r artifact.zip build'
 
-                    // Upload the zip file to S3 bucket
-                    sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
-                }
-            }
-        }
+        //             // Upload the zip file to S3 bucket
+        //             sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
+        //         }
+        //     }
+        // }
 
         
         stage('Test') {
