@@ -21,7 +21,7 @@ pipeline {
                     sh 'zip -r artifact.zip build'
 
                     // Upload the zip file to S3 bucket
-                    sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'*/
+                    sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
                 }
             }
         }
@@ -77,6 +77,7 @@ pipeline {
                 }
             }
         }
+
         
         stage('Monitoring and Alerting') {
             steps {
