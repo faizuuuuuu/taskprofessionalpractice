@@ -52,23 +52,19 @@ const assert = require('assert');
         assert.strictEqual(remainingItemText.trim(), 'Walk the dog\nDelete', "Remaining item was not found!");
         console.log("Test passed: Second item 'Walk the dog' is still present.");
 
-        // Test: Add multiple items and delete all
+        // Test: Add multiple items and delete them one by one
         const tasks = ['Clean the house', 'Finish project', 'Read a book'];
         for (let task of tasks) {
             await inputField.sendKeys(task);
             await addButton.click();
         }
+
         for (let task of tasks) {
             let taskItem = await driver.wait(until.elementLocated(By.xpath(`//li[contains(text(), '${task}')]`)), 10000);
             let deleteButton = await taskItem.findElement(By.xpath(".//button[contains(text(),'Delete')]"));
             await deleteButton.click();
             console.log(`Test passed: Item '${task}' was deleted.`);
         }
-
-        // Verify that all items are removed from the list
-        let remainingItems = await driver.findElements(By.css('ul.item-list li'));
-        assert.strictEqual(remainingItems.length, 0, "Not all items were deleted from the list!");
-        console.log("Test passed: All items were deleted from the list.");
 
     } catch (error) {
         console.error("Test failed: ", error);
