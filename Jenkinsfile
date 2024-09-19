@@ -62,13 +62,10 @@ pipeline {
             }
         }
 
-        // Release Stage using AWS CodeDeploy
         stage('Release') {
             steps {
                 script {
-                    // Use the AWS credentials stored in Jenkins
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-codedeploy']]) {
-                        // Deploy the artifact.zip to the EC2 instance using CodeDeploy
                         sh '''
                         aws deploy create-deployment \
                         --application-name my-app \
@@ -76,6 +73,27 @@ pipeline {
                         --s3-location bucket=my-app-deployment-bucket,key=deployments/artifact.zip,bundleType=zip
                         '''
                     }
+                }
+            }
+        }
+
+        // Monitoring and Alerting Stage
+        stage('Monitoring and Alerting') {
+            steps {
+                script {
+                    // Send build metrics to Datadog
+                    datadogStep(
+                        title: "Monitoring Jenkins Build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                        text: "The build has completed.",
+                        aggregationKey: "${env.JOB_NAME}-${env.BUILD_NUMBER}",
+                        alertType: "success", // Or "error" if there are issues
+                        tags: [
+                            "job_name:${env.JOB_NAME}",
+                            "build_number:${env.BUILD_NUMBER}",
+                            "jenkins_url:${env.BUILD_URL}",
+                            "build_status:${currentBuild.currentResult}"
+                        ]
+                    )
                 }
             }
         }
