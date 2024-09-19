@@ -11,6 +11,7 @@ pipeline {
                     // Create the production build for React
                     sh 'npm run build'
 
+/*
                     // Verify current directory
                     sh 'pwd'
 
@@ -22,10 +23,12 @@ pipeline {
 
                     // Upload the zip file to S3 bucket
                     sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
+                    */
                 }
             }
         }
 
+        /*
         stage('Test') {
             steps {
                 script {
@@ -76,6 +79,7 @@ pipeline {
                 }
             }
         }
+        */
 
         // Monitoring and Alerting Stage
         stage('Monitoring and Alerting') {
