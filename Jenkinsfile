@@ -5,17 +5,23 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Build the Docker image
+                    // Build Docker image
                     sh 'docker build -t react-app .'
 
                     // Create the production build for React
                     sh 'npm run build'
 
+                    // Verify current directory
+                    sh 'pwd' 
+
+                    // List files in the current directory for verification
+                    sh 'ls'
+
                     // Zip the build folder
-                    sh 'cd /Users/faiz/task6.2hd && zip -r artifact.zip build'
+                    sh 'zip -r artifact.zip build'
 
                     // Upload the zip file to S3 bucket
-                    sh 'aws s3 cp /Users/faiz/task6.2hd/artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
+                    sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
                 }
             }
         }
@@ -23,7 +29,6 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Run the Docker container and test
                     sh 'docker run --rm -d -p 3002:80 react-app'
                     sh '''
                     npm install
@@ -37,11 +42,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Stop and remove the old Docker container
                     sh 'docker stop $(docker ps -q --filter ancestor=react-app) || true'
                     sh 'docker rm $(docker ps -a -q --filter ancestor=react-app) || true'
-                    
-                    // Run the new Docker container
                     sh 'docker run -d -p 3002:80 react-app'
                 }
             }
@@ -50,10 +52,9 @@ pipeline {
         stage('Code Quality Analysis') {
             steps {
                 script {
-                    withSonarQubeEnv('SonarQube') { // 'SonarQube' is the name of your SonarQube server in Jenkins
-                        // Use credentialsId to get the token from Jenkins credentials store
+                    withSonarQubeEnv('SonarQube') {
                         withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                            def scannerHome = tool 'SonarQubeScanner' // Ensure 'SonarQubeScanner' matches your global tool name
+                            def scannerHome = tool 'SonarQubeScanner'
                             sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=my-react-app -Dsonar.sources=./src -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN"
                         }
                     }
@@ -61,7 +62,6 @@ pipeline {
             }
         }
 
-        // Release Stage using AWS CodeDeploy
         stage('Release') {
             steps {
                 script {
