@@ -5,6 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
+                    // Build the Docker image
                     sh 'docker build -t react-app .'
 
                     // Create the production build for React
@@ -22,6 +23,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
+                    // Run the Docker container and test
                     sh 'docker run --rm -d -p 3002:80 react-app'
                     sh '''
                     npm install
@@ -35,8 +37,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Stop and remove the old Docker container
                     sh 'docker stop $(docker ps -q --filter ancestor=react-app) || true'
                     sh 'docker rm $(docker ps -a -q --filter ancestor=react-app) || true'
+                    
+                    // Run the new Docker container
                     sh 'docker run -d -p 3002:80 react-app'
                 }
             }
