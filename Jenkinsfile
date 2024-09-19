@@ -81,12 +81,12 @@ pipeline {
         stage('Monitoring and Alerting') {
             steps {
                 script {
-                    // Send build metrics to Datadog
-                    datadogStep(
-                        title: "Monitoring Jenkins Build: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    // Send metrics to Datadog using the correct datadog plugin step
+                    datadog(
+                        title: "Jenkins Build Status: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                         text: "The build has completed.",
                         aggregationKey: "${env.JOB_NAME}-${env.BUILD_NUMBER}",
-                        alertType: "success", // Or "error" if there are issues
+                        alertType: currentBuild.currentResult == 'SUCCESS' ? "success" : "error",
                         tags: [
                             "job_name:${env.JOB_NAME}",
                             "build_number:${env.BUILD_NUMBER}",
