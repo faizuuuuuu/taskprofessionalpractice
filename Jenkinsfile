@@ -12,7 +12,7 @@ pipeline {
                     sh 'npm run build'
 
                     // Verify current directory
-                    sh 'pwd' 
+                    sh 'pwd'
 
                     // List files in the current directory for verification
                     sh 'ls'
@@ -62,16 +62,20 @@ pipeline {
             }
         }
 
+        // Release Stage using AWS CodeDeploy
         stage('Release') {
             steps {
                 script {
-                    // Deploy the artifact.zip to the EC2 instance using CodeDeploy
-                    awsCodeDeploy applicationName: 'my-app',
-                                  deploymentGroupName: 'my-deployment-group',
-                                  revisionLocationType: 'S3',
-                                  s3Bucket: 'my-app-deployment-bucket',
-                                  s3Key: 'deployments/artifact.zip',
-                                  waitForCompletion: true
+                    // Use the AWS credentials stored in Jenkins
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-codedeploy']]) {
+                        // Deploy the artifact.zip to the EC2 instance using CodeDeploy
+                        sh '''
+                        aws deploy create-deployment \
+                        --application-name my-app \
+                        --deployment-group-name my-deployment-group \
+                        --s3-location bucket=my-app-deployment-bucket,key=deployments/artifact.zip,bundleType=zip
+                        '''
+                    }
                 }
             }
         }
