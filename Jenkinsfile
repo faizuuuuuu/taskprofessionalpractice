@@ -8,7 +8,7 @@ pipeline {
                     // Build Docker image
                     sh 'docker build -t react-app .'
 
-                   /* // Create the production build for React
+                    // Create the production build for React
                     sh 'npm run build'
 
                     // Verify current directory
@@ -26,7 +26,7 @@ pipeline {
             }
         }
 
-        /*
+        
         stage('Test') {
             steps {
                 script {
@@ -77,7 +77,7 @@ pipeline {
                 }
             }
         }
-        */
+        
         stage('Monitoring and Alerting') {
             steps {
                 script {
