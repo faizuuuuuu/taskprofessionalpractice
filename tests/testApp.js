@@ -8,11 +8,9 @@ const assert = require('assert');
         // Navigate to the React app on localhost:3002
         await driver.get('http://localhost:3002');
 
-        // Wait for the title to appear
+        // Wait for the title to appear and verify it
         await driver.wait(until.elementLocated(By.tagName('h1')), 10000);
         let titleText = await driver.findElement(By.tagName('h1')).getText();
-
-        // Assert that the title is "Task List"
         assert.strictEqual(titleText, "Task List", "Title does not match!");
         console.log("Test passed: 'Task List' title is present.");
 
@@ -21,23 +19,24 @@ const assert = require('assert');
         let inputField = await driver.findElement(By.css('input'));
         let addButton = await driver.findElement(By.css('button'));
 
+        // Add the new item and click 'Add'
         await inputField.sendKeys(newItem);
         await addButton.click();
 
-        // Wait until the new item is added to the list
-        await driver.wait(until.elementLocated(By.xpath(`//li[contains(text(), '${newItem}')]`)), 5000);
-        let addedItem = await driver.findElement(By.xpath(`//li[contains(text(), '${newItem}')]`)).getText();
+        // Wait for the new item to appear in the list
+        await driver.wait(until.elementLocated(By.xpath(`//li[contains(., '${newItem}')]`)), 5000);
+        let addedItem = await driver.findElement(By.xpath(`//li[contains(., '${newItem}')]`)).getText();
 
-        // Assert that the new item is in the list
+        // Assert that the new item is added to the list
         assert.strictEqual(addedItem.includes(newItem), true, "Item was not added correctly!");
         console.log("Test passed: Item added successfully.");
 
         // Test deleting the item
-        let deleteButton = await driver.findElement(By.xpath(`//li[contains(text(), '${newItem}')]/button`));
+        let deleteButton = await driver.findElement(By.xpath(`//li[contains(., '${newItem}')]/button`));
         await deleteButton.click();
 
-        // Ensure the item is removed from the list
-        await driver.wait(until.stalenessOf(driver.findElement(By.xpath(`//li[contains(text(), '${newItem}')]`))), 5000);
+        // Wait for the item to be removed from the list
+        await driver.wait(until.stalenessOf(driver.findElement(By.xpath(`//li[contains(., '${newItem}')]`))), 5000);
         console.log("Test passed: Item deleted successfully.");
 
     } catch (error) {
