@@ -8,10 +8,9 @@ pipeline {
                     // Build Docker image
                     sh 'docker build -t react-app .'
 
-                    // Create the production build for React
+                   /* // Create the production build for React
                     sh 'npm run build'
 
-/*
                     // Verify current directory
                     sh 'pwd'
 
@@ -22,8 +21,7 @@ pipeline {
                     sh 'zip -r artifact.zip build'
 
                     // Upload the zip file to S3 bucket
-                    sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
-                    */
+                    sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'*/
                 }
             }
         }
@@ -81,23 +79,24 @@ pipeline {
         }
         */
 
-        // Monitoring and Alerting Stage
-        stage('Monitoring and Alerting') {
+         stage('Monitoring and Alerting') {
             steps {
                 script {
-                    // Send metrics to Datadog using the correct datadog plugin step
-                    datadog(
-                        title: "Jenkins Build Status: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                        text: "The build has completed.",
-                        aggregationKey: "${env.JOB_NAME}-${env.BUILD_NUMBER}",
-                        alertType: currentBuild.currentResult == 'SUCCESS' ? "success" : "error",
-                        tags: [
-                            "job_name:${env.JOB_NAME}",
-                            "build_number:${env.BUILD_NUMBER}",
-                            "jenkins_url:${env.BUILD_URL}",
-                            "build_status:${currentBuild.currentResult}"
-                        ]
-                    )
+                    datadog {
+                        // Send a simple event to Datadog
+                        datadogEvent(
+                            title: "Jenkins Build Status: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                            text: "Build finished with status: ${currentBuild.currentResult}",
+                            aggregationKey: "${env.JOB_NAME}-${env.BUILD_NUMBER}",
+                            alertType: currentBuild.currentResult == 'SUCCESS' ? "success" : "error",
+                            tags: [
+                                "job_name:${env.JOB_NAME}",
+                                "build_number:${env.BUILD_NUMBER}",
+                                "jenkins_url:${env.BUILD_URL}",
+                                "build_status:${currentBuild.currentResult}"
+                            ]
+                        )
+                    }
                 }
             }
         }
