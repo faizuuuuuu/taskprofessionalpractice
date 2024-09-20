@@ -2,6 +2,15 @@ pipeline {
     agent any
 
     stages {
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Install dependencies using npm
+                    sh 'npm install'
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 script {
@@ -26,16 +35,17 @@ pipeline {
             }
         }
 
-       
         stage('Test') {
             steps {
                 script {
+                    // Run the app in a Docker container
                     sh 'docker run --rm -d -p 3002:80 react-app'
-                    sh '''
-                    npm install
-                    npm install selenium-webdriver
-                    node tests/testApp.js
-                    '''
+
+                    // Install testing dependencies
+                    sh 'npm install selenium-webdriver'
+
+                    // Run the Selenium tests
+                    sh 'node tests/testApp.js'
                 }
             }
         }
@@ -43,8 +53,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Stop any running containers for the app
                     sh 'docker stop $(docker ps -q --filter ancestor=react-app) || true'
+
+                    // Remove stopped containers
                     sh 'docker rm $(docker ps -a -q --filter ancestor=react-app) || true'
+
+                    // Start the app in a Docker container
                     sh 'docker run -d -p 3002:80 react-app'
                 }
             }
@@ -78,7 +93,6 @@ pipeline {
             }
         }
 
-        
         stage('Monitoring and Alerting') {
             steps {
                 script {
