@@ -12,77 +12,71 @@ pipeline {
         }
 
         stage('Build') {
-    steps {
-        script {
-            // Build Docker image
-            sh 'docker build -t react-app .'
+            steps {
+                script {
+                    // Build Docker image
+                    sh 'docker build -t react-app .'
 
-            // Create the production build for React
-            sh 'npm run build'
+                    // Create the production build for React
+                    sh 'npm run build'
 
-            // Copy appspec.yml to the build directory
-            sh 'cp appspec.yml build/'  // Ensure appspec.yml is copied to the build folder
+                    // Verify current directory
+                    sh 'pwd'
 
-            // Verify current directory
-            sh 'pwd'
+                    // List files in the current directory for verification
+                    sh 'ls'
 
-            // List files in the build directory to verify appspec.yml is copied
-            sh 'ls build'
+                    // Zip the build folder
+                    sh 'zip -r artifact.zip build'
 
-            // Zip the build folder including appspec.yml
-            sh 'cd build && zip -r ../artifact.zip .'
-
-            // List files to verify that artifact.zip has been created
-            sh 'ls -lh ../artifact.zip'
-
-            // Upload the zip file to S3 bucket
-            sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
+                    // Upload the zip file to S3 bucket
+                    sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
+                }
+            }
         }
-    }
-}
 
-        // stage('Test') {
-        //     steps {
-        //         script {
-        //             // Run the app in a Docker container
-        //             sh 'docker run --rm -d -p 3002:80 react-app'
+        stage('Test') {
+            steps {
+                script {
+                    // Run the app in a Docker container
+                    sh 'docker run --rm -d -p 3002:80 react-app'
 
-        //             // Install testing dependencies
-        //             sh 'npm install selenium-webdriver'
+                    // Install testing dependencies
+                    sh 'npm install selenium-webdriver'
 
-        //             // Run the Selenium tests
-        //             sh 'node tests/testApp.js'
-        //         }
-        //     }
-        // }
+                    // Run the Selenium tests
+                    sh 'node tests/testApp.js'
+                }
+            }
+        }
 
-        // stage('Deploy') {
-        //     steps {
-        //         script {
-        //             // Stop any running containers for the app
-        //             sh 'docker stop $(docker ps -q --filter ancestor=react-app) || true'
+        stage('Deploy') {
+            steps {
+                script {
+                    // Stop any running containers for the app
+                    sh 'docker stop $(docker ps -q --filter ancestor=react-app) || true'
 
-        //             // Remove stopped containers
-        //             sh 'docker rm $(docker ps -a -q --filter ancestor=react-app) || true'
+                    // Remove stopped containers
+                    sh 'docker rm $(docker ps -a -q --filter ancestor=react-app) || true'
 
-        //             // Start the app in a Docker container
-        //             sh 'docker run -d -p 3002:80 react-app'
-        //         }
-        //     }
-        // }
+                    // Start the app in a Docker container
+                    sh 'docker run -d -p 3002:80 react-app'
+                }
+            }
+        }
 
-        // stage('Code Quality Analysis') {
-        //     steps {
-        //         script {
-        //             withSonarQubeEnv('SonarQube') {
-        //                 withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-        //                     def scannerHome = tool 'SonarQubeScanner'
-        //                     sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=my-react-app -Dsonar.sources=./src -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN"
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Code Quality Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQube') {
+                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                            def scannerHome = tool 'SonarQubeScanner'
+                            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=my-react-app -Dsonar.sources=./src -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN"
+                        }
+                    }
+                }
+            }
+        }
 
         stage('Release') {
             steps {
