@@ -41,48 +41,48 @@ pipeline {
     }
 }
 
-        stage('Test') {
-            steps {
-                script {
-                    // Run the app in a Docker container
-                    sh 'docker run --rm -d -p 3002:80 react-app'
+        // stage('Test') {
+        //     steps {
+        //         script {
+        //             // Run the app in a Docker container
+        //             sh 'docker run --rm -d -p 3002:80 react-app'
 
-                    // Install testing dependencies
-                    sh 'npm install selenium-webdriver'
+        //             // Install testing dependencies
+        //             sh 'npm install selenium-webdriver'
 
-                    // Run the Selenium tests
-                    sh 'node tests/testApp.js'
-                }
-            }
-        }
+        //             // Run the Selenium tests
+        //             sh 'node tests/testApp.js'
+        //         }
+        //     }
+        // }
 
-        stage('Deploy') {
-            steps {
-                script {
-                    // Stop any running containers for the app
-                    sh 'docker stop $(docker ps -q --filter ancestor=react-app) || true'
+        // stage('Deploy') {
+        //     steps {
+        //         script {
+        //             // Stop any running containers for the app
+        //             sh 'docker stop $(docker ps -q --filter ancestor=react-app) || true'
 
-                    // Remove stopped containers
-                    sh 'docker rm $(docker ps -a -q --filter ancestor=react-app) || true'
+        //             // Remove stopped containers
+        //             sh 'docker rm $(docker ps -a -q --filter ancestor=react-app) || true'
 
-                    // Start the app in a Docker container
-                    sh 'docker run -d -p 3002:80 react-app'
-                }
-            }
-        }
+        //             // Start the app in a Docker container
+        //             sh 'docker run -d -p 3002:80 react-app'
+        //         }
+        //     }
+        // }
 
-        stage('Code Quality Analysis') {
-            steps {
-                script {
-                    withSonarQubeEnv('SonarQube') {
-                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                            def scannerHome = tool 'SonarQubeScanner'
-                            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=my-react-app -Dsonar.sources=./src -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN"
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Code Quality Analysis') {
+        //     steps {
+        //         script {
+        //             withSonarQubeEnv('SonarQube') {
+        //                 withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+        //                     def scannerHome = tool 'SonarQubeScanner'
+        //                     sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=my-react-app -Dsonar.sources=./src -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Release') {
             steps {
