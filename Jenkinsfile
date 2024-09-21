@@ -12,28 +12,34 @@ pipeline {
         }
 
         stage('Build') {
-            steps {
-                script {
-                    // Build Docker image
-                    sh 'docker build -t react-app .'
+    steps {
+        script {
+            // Build Docker image
+            sh 'docker build -t react-app .'
 
-                    // Create the production build for React
-                    sh 'npm run build'
+            // Create the production build for React
+            sh 'npm run build'
 
-                    // Verify current directory
-                    sh 'pwd'
+            // Copy appspec.yml to the build directory
+            sh 'cp appspec.yml build/'  // Ensure appspec.yml is copied to the build folder
 
-                    // List files in the current directory for verification
-                    sh 'ls'
+            // Verify current directory
+            sh 'pwd'
 
-                    // Zip the build folder
-                    sh 'zip -r artifact.zip build'
+            // List files in the build directory to verify appspec.yml is copied
+            sh 'ls build'
 
-                    // Upload the zip file to S3 bucket
-                    sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
-                }
-            }
+            // Zip the build folder including appspec.yml
+            sh 'cd build && zip -r ../artifact.zip .'
+
+            // List files to verify that artifact.zip has been created
+            sh 'ls -lh ../artifact.zip'
+
+            // Upload the zip file to S3 bucket
+            sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
         }
+    }
+}
 
         stage('Test') {
             steps {
