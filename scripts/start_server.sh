@@ -6,10 +6,10 @@ echo "Starting the React application on port 3002..."
 npm start > app.log 2>&1 &
 
 # Wait for a few seconds to ensure the app has started
-sleep 10
+sleep 20
 
 # Check if the application is running
-if pgrep -f "node" > /dev/null
+if pgrep -f "react-scripts" > /dev/null
 then
     echo "Application started successfully."
 else
