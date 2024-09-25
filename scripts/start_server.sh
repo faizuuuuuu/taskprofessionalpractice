@@ -1,8 +1,8 @@
 #!/bin/bash
-# Start the Node.js/React application
+# Start the Node.js server or React build
 cd /var/www/html
 
-echo "Starting the React application on port 3002..."
+echo "Starting the Node.js/React application..."
 npm start > app.log 2>&1 &
 
 # Wait for a few seconds to ensure the app has started
