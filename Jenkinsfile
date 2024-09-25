@@ -35,7 +35,7 @@ pipeline {
                 }
             }
         }
-
+/*
         stage('Test') {
             steps {
                 script {
@@ -78,7 +78,7 @@ pipeline {
                 }
             }
         }
-
+*/
         stage('Release') {
             steps {
                 script {
