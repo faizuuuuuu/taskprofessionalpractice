@@ -1,12 +1,12 @@
 #!/bin/bash
-# Validate that the application is running on port 3002
+# Validate that the application is running
 echo "Validating application status..."
 
-# Wait to ensure the application has had time to start
+# Wait for the application to start
 sleep 30
 
-# Check if the application is accessible
-curl -s -o /dev/null -w "%{http_code}" http://localhost:3002
+# Check if the application is running on port 3002
+curl -I http://localhost:3002
 
 if [ $? -ne 0 ]; then
     echo "Validation failed. Application is not running."

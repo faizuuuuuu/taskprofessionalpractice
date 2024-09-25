@@ -1,12 +1,7 @@
 #!/bin/bash
-# Install npm dependencies
+# Install Node.js and npm dependencies
+echo "Installing Node.js and npm dependencies..."
 cd /var/www/html
-
-echo "Installing npm dependencies..."
+curl -sL https://rpm.nodesource.com/setup_18.x | sudo bash -
+sudo yum install -y nodejs
 npm install
-
-if [ $? -ne 0 ]; then
-    echo "npm install failed."
-    exit 1
-fi
-echo "Dependencies installed successfully."

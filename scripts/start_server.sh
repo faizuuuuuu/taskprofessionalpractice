@@ -1,11 +1,17 @@
-# Start the Docker container
-docker run -d -p 3002:3000 react-app
+#!/bin/bash
+# Start the React application
+cd /var/www/html
+echo "Starting the React application on port 3002..."
+PORT=3002 npm start > app.log 2>&1 &
 
-# Check if the container is running
-if docker ps | grep react-app > /dev/null
+# Wait for a few seconds to ensure the app has started
+sleep 10
+
+# Check if the application is running
+if pgrep -f "react-scripts" > /dev/null
 then
-    echo "Docker container started successfully."
+    echo "Application started successfully."
 else
-    echo "Failed to start Docker container."
+    echo "Application failed to start."
     exit 1
 fi
