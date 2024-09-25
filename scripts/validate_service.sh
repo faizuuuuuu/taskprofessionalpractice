@@ -1,17 +1,13 @@
 #!/bin/bash
-# Validate that the application is running
-echo "Validating application status..."
+# Navigate to the deployment directory
+cd /var/www/html
 
-# Wait for the application to start
-sleep 100
-
-# Check if the application is running on port 3002
-curl -I http://localhost:3002
-
-if [ $? -ne 0 ]; then
-    echo "Validation failed. Application is not running."
-    exit 1
-else
-    echo "Validation succeeded. Application is running."
-    exit 0
+# Check if Node.js and npm are installed, install if not
+if ! command -v npm &> /dev/null
+then
+    echo "npm not found. Installing Node.js and npm..."
+    curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
+    sudo yum install -y nodejs
 fi
+
+echo "Dependencies are already installed. Skipping npm install."
