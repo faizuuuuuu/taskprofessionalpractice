@@ -1,4 +1,4 @@
 #!/bin/bash
-# Clean up the existing application
-echo "Cleaning up existing application files..."
+# Clean up any previous deployments
+echo "Cleaning up previous deployment..."
 sudo rm -rf /var/www/html/*

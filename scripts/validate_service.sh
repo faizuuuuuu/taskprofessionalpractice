@@ -3,7 +3,7 @@
 echo "Validating application status..."
 
 # Wait for the application to start
-sleep 30
+sleep 20
 
 # Check if the application is running on port 3002
 curl -I http://localhost:3002

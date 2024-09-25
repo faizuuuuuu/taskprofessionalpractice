@@ -1,7 +1,15 @@
 #!/bin/bash
-# Install Node.js and npm dependencies
-echo "Installing Node.js and npm dependencies..."
+# Navigate to the deployment directory
 cd /var/www/html
-curl -sL https://rpm.nodesource.com/setup_18.x | sudo bash -
-sudo yum install -y nodejs
+
+# Check if Node.js and npm are installed, install if not
+if ! command -v npm &> /dev/null
+then
+    echo "npm not found. Installing Node.js and npm..."
+    curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
+    sudo yum install -y nodejs
+fi
+
+# Install npm dependencies
+echo "Installing npm dependencies..."
 npm install
