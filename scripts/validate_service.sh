@@ -6,7 +6,7 @@ echo "Validating application status..."
 sleep 30
 
 # Check if the application is accessible
-curl -I http://localhost:3002
+curl -s -o /dev/null -w "%{http_code}" http://localhost:3002
 
 if [ $? -ne 0 ]; then
     echo "Validation failed. Application is not running."
