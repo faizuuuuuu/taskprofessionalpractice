@@ -27,8 +27,7 @@ pipeline {
                     sh 'ls'
 
                     // Zip the build folder
-              sh 'zip -r artifact.zip build scripts appspec.yml -x "node_modules/*"'
-
+                sh 'zip -r artifact.zip build scripts appspec.yml *'
 
 
 
