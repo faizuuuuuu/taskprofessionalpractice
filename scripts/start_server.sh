@@ -1,5 +1,5 @@
 # Start the Docker container
-docker run -d -p 3002:3002 react-app
+docker run -d -p 3002:3000 react-app
 
 # Check if the container is running
 if docker ps | grep react-app > /dev/null
