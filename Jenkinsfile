@@ -27,7 +27,8 @@ pipeline {
                     sh 'ls'
 
                     // Zip the build folder
-                    sh 'zip -r artifact.zip build'
+                  sh 'zip -r artifact.zip build scripts appspec.yml'
+
 
                     // Upload the zip file to S3 bucket
                     sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
