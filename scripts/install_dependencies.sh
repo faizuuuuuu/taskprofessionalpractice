@@ -1,12 +1,12 @@
 #!/bin/bash
-# Change to the deployment directory
+# Install npm dependencies
 cd /var/www/html
 
-# Check if package.json exists before running npm install
-if [ -f "package.json" ]; then
-    echo "Found package.json, installing dependencies..."
-    npm install
-else
-    echo "Error: package.json not found in /var/www/html"
+echo "Installing npm dependencies..."
+npm install
+
+if [ $? -ne 0 ]; then
+    echo "npm install failed."
     exit 1
 fi
+echo "Dependencies installed successfully."
