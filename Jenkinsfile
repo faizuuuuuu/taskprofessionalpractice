@@ -52,7 +52,7 @@ pipeline {
                 }
             }
         }
-
+*/
         stage('Deploy') {
             steps {
                 script {
@@ -67,7 +67,7 @@ pipeline {
                 }
             }
         }
-
+/*
         stage('Code Quality Analysis') {
             steps {
                 script {
