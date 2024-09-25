@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /var/www/html # Change this to your target directory
+    destination: /var/www/html
 
 hooks:
   BeforeInstall:
