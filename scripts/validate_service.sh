@@ -2,10 +2,10 @@
 # Validate that the application is running
 echo "Validating application status..."
 
-# Wait for the application to start (adjust the sleep time if necessary)
-sleep 5
+# Wait for the application to start
+sleep 20
 
-# Check if the application is running
+# Check if the application is running on port 3002
 curl -I http://localhost:3002
 
 if [ $? -ne 0 ]; then
