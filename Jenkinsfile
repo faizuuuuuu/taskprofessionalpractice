@@ -2,16 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Clean Workspace') {
-            steps {
-                script {
-                    // Clean the workspace to ensure no old files cause conflicts
-                    sh 'rm -rf node_modules package-lock.json'
-                    sh 'npm cache clean --force'
-                }
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 script {
@@ -24,9 +14,9 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Set memory limit to avoid memory issues during build
-                    sh 'export NODE_OPTIONS=--max_old_space_size=4096'
-                    
+                    // Build Docker image
+                    sh 'docker build -t react-app .'
+
                     // Create the production build for React
                     sh 'npm run build'
 
@@ -36,21 +26,28 @@ pipeline {
                     // List files in the current directory for verification
                     sh 'ls'
 
-                    // Zip the build folder along with the necessary files for deployment
-                    sh 'zip -r artifact.zip build scripts appspec.yml -x "node_modules/*"'
+                    // Zip the build folder
+              sh 'zip -r artifact.zip build scripts appspec.yml -x "node_modules/*"'
 
-                    // Upload the zip file to the S3 bucket
+
+
+
+                    // Upload the zip file to S3 bucket
                     sh 'aws s3 cp artifact.zip s3://my-app-deployment-bucket/deployments/artifact.zip'
                 }
             }
         }
 
-        // Keep the rest of the Jenkinsfile stages unchanged
         stage('Test') {
             steps {
                 script {
+                    // Run the app in a Docker container
                     sh 'docker run --rm -d -p 3002:80 react-app'
+
+                    // Install testing dependencies
                     sh 'npm install selenium-webdriver'
+
+                    // Run the Selenium tests
                     sh 'node tests/testApp.js'
                 }
             }
@@ -59,8 +56,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Stop any running containers for the app
                     sh 'docker stop $(docker ps -q --filter ancestor=react-app) || true'
+
+                    // Remove stopped containers
                     sh 'docker rm $(docker ps -a -q --filter ancestor=react-app) || true'
+
+                    // Start the app in a Docker container
                     sh 'docker run -d -p 3002:80 react-app'
                 }
             }
@@ -98,6 +100,7 @@ pipeline {
             steps {
                 script {
                     datadog {
+                        // Send a simple build status to Datadog
                         echo "Sending build status to Datadog..."
                     }
                 }
