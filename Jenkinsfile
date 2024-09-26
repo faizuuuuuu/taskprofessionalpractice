@@ -7,6 +7,8 @@ pipeline {
                 script {
                     // Install dependencies using npm
                     sh 'npm install'
+
+                    sh 'npm install html-webpack-plugin source-map-loader --save-dev'
                 }
             }
         }
