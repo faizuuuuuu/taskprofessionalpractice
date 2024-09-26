@@ -14,4 +14,4 @@ fi
 echo "Installing npm dependencies..."
 npm install
 
-npm install html-webpack-plugin source-map-loader --save-dev
+
